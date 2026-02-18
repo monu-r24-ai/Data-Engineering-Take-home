@@ -1,0 +1,31 @@
+Project Summary & Considerations
+​1. Project Overview
+​The objective of this challenge was to build a robust data pipeline using PySpark to analyze the NYC Jobs dataset. The solution encompasses data exploration, statistical analysis of key performance indicators (KPIs), and advanced data processing to prepare the data for downstream consumption.
+
+​2. Technical Assumptions
+​To ensure consistency across calculations, the following assumptions were made:
+​Annualization Factor: Hourly salaries were converted to annual figures based on a standard 2,080-hour work year (40 hours/week * 52 weeks).
+​Daily Conversion: Daily rates were converted using a 260-day work year (5 days/week * 52 weeks).
+​Timeframe for KPIs: The "last 2 years" metric was calculated relative to the maximum (most recent) Posting Date found within the source dataset to ensure the analysis remained relevant to the data's timeline.
+
+​3. Key Challenges & Resolutions
+​Data Type Mismatch: A significant hurdle was encountered where numerical operations (like quantiles) failed because the Salary Range To column was initially interpreted as a StringType.
+​Resolution: Implemented explicit casting to DoubleType before processing.
+​Unstructured Data: Educational requirements were buried in long text fields.
+​Resolution: Used string matching and keyword extraction to create a numerical Education_Rank for correlation analysis.
+
+​4. Feature Engineering Techniques
+​Three specific techniques were applied to enhance the dataset:
+​Ordinal Encoding: Mapping degrees (Master's, Bachelor's) to a numeric scale to measure salary correlation.
+​Numerical Binning: Categorizing jobs into seniority levels (Junior, Mid, Senior) based on standardized annual salary brackets.
+​Text Tokenization: Splitting the "Preferred Skills" field to calculate "Skill Density," allowing for a quantitative analysis of role complexity.
+​
+5. Deployment & Operational Strategy
+​To transition this code from a notebook to a production environment, the following strategy is proposed:
+​Deployment Steps
+​Containerization: Use Docker to package the PySpark application, ensuring environmental parity between development and production.
+​Cloud Infrastructure: Deploy the job to a managed service like AWS EMR or Azure Databricks to leverage distributed computing power.
+​Automated Testing: Integrate the unittest suite into a CI/CD pipeline (e.g., GitHub Actions) to validate transformations before every deployment.
+​Triggering Approach
+​Scheduled (Batch): Utilize Apache Airflow to trigger the pipeline daily, ensuring the city's job data is refreshed every 24 hours.
+​Event-Driven: Configure S3 Event Notifications to trigger the Spark job immediately whenever a new version of nyc-jobs.csv is uploaded to the landing zone.
